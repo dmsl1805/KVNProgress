@@ -1414,9 +1414,9 @@ static KVNProgressConfiguration *configuration;
 }
 
 - (void)layoutIfNeeded {
-    [NSOperationQueue mainQueue]addOperationWithBlock:^{
+    [[NSOperationQueue mainQueue]addOperationWithBlock:^{
         [super layoutIfNeeded];
-    }
+    }];
 }
 
 @end
