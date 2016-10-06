@@ -338,12 +338,43 @@ static KVNProgressConfiguration *configuration;
 }
 
 - (void)showProgress:(CGFloat)progress
-			  status:(NSString *)status
-			   style:(KVNProgressStyle)style
-	  backgroundType:(KVNProgressBackgroundType)backgroundType
-		  fullScreen:(BOOL)fullScreen
-				view:(UIView *)superview
-		  completion:(KVNCompletionBlock)completion
+                    status:(NSString *)status
+                     style:(KVNProgressStyle)style
+            backgroundType:(KVNProgressBackgroundType)backgroundType
+                fullScreen:(BOOL)fullScreen
+                      view:(UIView *)superview
+                completion:(KVNCompletionBlock)completion
+{
+    if ([NSThread mainThread]) {
+        [self showProgressOnMain:progress
+                          status:status
+                           style:style
+                  backgroundType:backgroundType
+                      fullScreen:fullScreen
+                            view:superview
+                      completion:completion];
+    } else {
+        __weak typeof(self) weakSelf = self;
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            __strong typeof(self) strongSelf = weakSelf;
+            [strongSelf showProgressOnMain:progress
+                              status:status
+                               style:style
+                      backgroundType:backgroundType
+                          fullScreen:fullScreen
+                                view:superview
+                          completion:completion];
+        }];
+    }
+}
+
+- (void)showProgressOnMain:(CGFloat)progress
+                    status:(NSString *)status
+                     style:(KVNProgressStyle)style
+            backgroundType:(KVNProgressBackgroundType)backgroundType
+                fullScreen:(BOOL)fullScreen
+                      view:(UIView *)superview
+                completion:(KVNCompletionBlock)completion
 {
 	KVNPrepareBlockSelf();
 	
